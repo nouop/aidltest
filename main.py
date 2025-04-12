@@ -1,9 +1,13 @@
 from ai_api import cz_api, ds_api, silconflow_api
-from read_data import read_question
+from read_data import read_question, read_question_h
 import json
 import time
 ainame = ["Qwen/Qwen2.5-Coder-7B-Instruct","Qwen/QwQ-32B","deepseek-ai/DeepSeek-R1","Pro/deepseek-ai/DeepSeek-V3","deepseek-ai/DeepSeek-V3","Pro/deepseek-ai/DeepSeek-R1"]
 ainamenum = 0
+prompt = "你是一个数学专家，请根据题目使用中文给出答案"
+qp = "使用中文思考并回答问题："
+# prompt = "you are a math expert, please answer the question using English."
+# qp = "use English to think and answer the question:"
 worklog = {}
 
 
@@ -27,11 +31,12 @@ def save_to_json(data, filename):
 
 def main():
     worklog[ainame[ainamenum]] = {}
-    for i in range(1, 3):
-        question_ = read_question("./data/2010-2022_Math_I_MCQs.json", i)
+    for i in range(10):
+        # question_ = read_question("./data/2010-2022_Math_I_MCQs.json", i)
+        question_ = read_question_h(i)
         print(question_)
-        response = silconflow_api(question_[0], "你是一个数学专家，请根据题目给出答案", ainame[ainamenum])
-        ai_answear = silconflow_api(response, "你是作答筛选机器人，旨在从文本中去除过程，筛选返回题目答案，只能回答字母或数字！！!（如A,B,C,D,92等）", "deepseek-ai/DeepSeek-V3")
+        response = silconflow_api(qp+question_[0], prompt, ainame[ainamenum])
+        ai_answear = silconflow_api(response, "你是作答筛选机器人，旨在从文本中去除过程，筛选返回题目答案，只能回答字母或数字！！!（如A,B,C,D,92,68等）", "deepseek-ai/DeepSeek-V3")
         print(response)
         print(ai_answear)
         if ai_answear.strip() == question_[1]:
@@ -40,9 +45,10 @@ def main():
         else:
             worklog[ainame[ainamenum]][str(i+1)] = False
             print("错误")
+
     save_to_json(worklog, "worklog.json")
     print(worklog)
-        
+
 
 if __name__ == "__main__":
     main()
