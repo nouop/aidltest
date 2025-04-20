@@ -65,8 +65,8 @@ def main():
                     worklog[ainame[ainamenum]][str(i+1)] = False
                     print("错误")
 
-                save_to_json(worklog, "worklog.json")
-                print(worklog)
+            save_to_json(worklog, "worklog.json")
+            print(worklog)
         
         except Exception as e:
             print(f"An error occurred: {e}")
